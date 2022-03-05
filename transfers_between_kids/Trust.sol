@@ -1,3 +1,4 @@
+//SPDX-License-Identifier: GPL-2.0-or-later
 //especificar a versão do solidity
 pragma solidity = 0.8.1;
 
