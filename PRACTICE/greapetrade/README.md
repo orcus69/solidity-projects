@@ -8,4 +8,4 @@ This project will use Ganache to simulate a blockchain to deploy the smart contr
 
 ## Preview
 
-![Preview Home Page](assets/images/josue.svg)
+![Preview Home Page](assets/images/home.png)
