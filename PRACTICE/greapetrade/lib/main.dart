@@ -2,12 +2,13 @@
 import 'dart:html';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_web3/flutter_web3.dart';
 import 'package:greapetrade/controllers/metamask.dart';
 import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -75,173 +76,218 @@ class MyApp extends StatelessWidget {
   }
 
   Widget _buildCard(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(top: 50),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20.0),
-      ),
-      color: Colors.white,
-      elevation: 6.0,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Center(
-              child: Container(
-                margin: const EdgeInsets.only(top: 20.0),
-                child: Image.asset(
-                  "/images/logo.svg",
-                  fit: BoxFit.cover,
-                  scale: 2,
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
+    //FormKey
+    final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-            Text(
-              context.read<MetaMaskProvider>().currentAddress,
-              style: const TextStyle(
-                  fontSize: 12, fontWeight: FontWeight.bold),
-            ),
+    //TextControllers
+    final TextEditingController toAddressController = TextEditingController();
+    final TextEditingController amountController = TextEditingController();
 
-            const SizedBox(
-              height: 10,
-            ),
-    
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                ListTile(
-                  title: TextFormField(
-                    decoration: const InputDecoration(
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Color(0xff5900B2), width: 1.0),
+    return ChangeNotifierProvider(
+      create: (_) => MetaMaskProvider(),
+      builder: (_, child) {
+        return Card(
+          margin: const EdgeInsets.only(top: 50),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.0),
+          ),
+          color: Colors.white,
+          elevation: 6.0,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Consumer<MetaMaskProvider>(
+              builder: (context, provider, child) {
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Center(
+                      child: Container(
+                        margin: const EdgeInsets.only(top: 20.0),
+                        child: Image.asset(
+                          "/images/logo.svg",
+                          fit: BoxFit.cover,
+                          scale: 2,
+                        ),
                       ),
-                      hintStyle: TextStyle(color: Color(0xff5900B2)),
-                      hintText: '0x000000000000',
-                      labelText: 'to:',
                     ),
-                    keyboardType: TextInputType.emailAddress,
-                  ),
-                ),
-    
-                ListTile(
-                  title: TextFormField(
-                    decoration: const InputDecoration(
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Color(0xff5900B2), width: 1.0),
-                      ),
-                      hintText: '0.0001',
-                      labelText: 'Amount',
+                    const SizedBox(
+                      height: 20,
                     ),
-                    keyboardType: TextInputType.number,
-                  ),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Container(
-                    alignment: Alignment.topLeft,
-                    child: Text(
-                      "from: ${context.read<MetaMaskProvider>().currentAddress}\nto: 0x00000000000000000\nYour Balnace: ${context.read<MetaMaskProvider>().balance} ETH",
+
+                    Text(
+                      provider.currentAddress,
                       style: const TextStyle(
                           fontSize: 12, fontWeight: FontWeight.bold),
                     ),
-                  ),
-                ),
 
-                _builButton(context)
-              ],
+                    const SizedBox(
+                      height: 10,
+                    ),
+        
+                    Form(
+                      key: formKey,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          ListTile(
+                            title: TextFormField(
+                              controller: toAddressController,
+                              decoration: const InputDecoration(
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Color(0xff5900B2), width: 1.0),
+                                ),
+                                hintStyle: TextStyle(color: Color(0xff5900B2)),
+                                hintText: '0x000000000000',
+                                labelText: 'to:',
+                              ),
+                              keyboardType: TextInputType.emailAddress,
+                              validator: (addres) => addres!.isEmpty ? "Error. Please insert an address!" : null,
+                            ),
+                          ),
+        
+                          ListTile(
+                            title: TextFormField(
+                              controller: amountController,
+                              decoration: const InputDecoration(
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Color(0xff5900B2), width: 1.0),
+                                ),
+                                hintText: '0.0001',
+                                labelText: 'Amount',
+                              ),
+                              inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.allow(RegExp(r'\.|[0-9]')),],
+                              keyboardType: TextInputType.number,
+                              validator: (amount){
+                                if(amount!.isEmpty){
+                                  return "Error. Please insert an amount!";
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 10.0),
+                            child: Container(
+                              alignment: Alignment.topLeft,
+                              child: Text(
+                                "from: ${provider.currentAddress}\nto: ${toAddressController.text}\nYour Balnace: ${provider.balance} ETH",
+                                style: const TextStyle(
+                                    fontSize: 12, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ),
+
+                          Container(
+                            margin: const EdgeInsets.only(top: 20),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                              child:  (!provider.isConnected) ? ElevatedButton(
+                                style: ButtonStyle(
+                                  foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                                  backgroundColor: MaterialStateProperty.all<Color>(const Color(0xff5900B2)),
+                                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    )
+                                  )
+                                ),
+                                child: provider.isLoading ? Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: const [
+                                      Padding(
+                                        padding: EdgeInsets.symmetric(vertical: 8.0),
+                                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 4,),
+                                      )
+                                    ],
+                                  ) 
+                                  : Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                      child: Image.asset(
+                                        "/images/metamask.svg",
+                                        fit: BoxFit.cover,
+                                        scale: 10,
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      width: 15,
+                                    ),
+                                    const Text(
+                                      'Connect to MetaMask',
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold),
+                                    )
+                                  ],
+                                ),
+                                onPressed: () async => await provider.connect(),
+                              )
+                              : ElevatedButton(
+                                style: ButtonStyle(
+                                  foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                                  backgroundColor: MaterialStateProperty.all<Color>(Color(0xff5900B2)),
+                                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    )
+                                  )
+                                ),
+                                onPressed: () async{ 
+                                  if(formKey.currentState!.validate()){
+                                    await provider.transfer(
+                                      provider.currentAddress, 
+                                      toAddressController.text, 
+                                      amountController.text
+                                    );
+                                  
+                                  //make a deposit
+                                  //metaMaskProvider.deposit(BigInt.one).then((value) => print('ok')).catchError((e){print(e);});
+                                  }
+                                },
+                                child: provider.isLoading ? Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: const [
+                                    Padding(
+                                      padding: EdgeInsets.symmetric(vertical: 6.0),
+                                      child: CircularProgressIndicator(color: Colors.white, strokeWidth: 4,),
+                                    )
+                                  ],
+                                )
+                                : Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: const [ 
+                                    Padding(
+                                      padding: EdgeInsets.symmetric(vertical: 14.0),
+                                      child: Text(
+                                        'Enviar',
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ), 
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              }
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _builButton(BuildContext context){
-    final isConnected = context.read<MetaMaskProvider>().isConnected;
-
-    return Container(
-      margin: const EdgeInsets.only(top: 20),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10.0),
-        child:  (!isConnected) ? ElevatedButton(
-          style: ButtonStyle(
-            foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-            backgroundColor: MaterialStateProperty.all<Color>(Color(0xff5900B2)),
-            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-              RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              )
-            )
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                    vertical: 8.0),
-                child: Image.asset(
-                  "/images/metamask.svg",
-                  fit: BoxFit.cover,
-                  scale: 10,
-                ),
-              ),
-              const SizedBox(
-                width: 15,
-              ),
-              const Text(
-                'Connect to MetaMask',
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold),
-              )
-            ],
-          ),
-          onPressed: () => context.read<MetaMaskProvider>().connect(),
-        )
-        : ElevatedButton(
-          style: ButtonStyle(
-            foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-            backgroundColor: MaterialStateProperty.all<Color>(Color(0xff5900B2)),
-            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-              RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              )
-            )
-          ),
-          child: Padding(
-                padding: const EdgeInsets.symmetric(
-                    vertical: 8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
-                Text(
-                  'Enviar',
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-          ),
-          onPressed: ()async{
-            //make a deposit
-            context.read<MetaMaskProvider>().deposit(BigInt.one).then((value) => print('ok')).catchError((e){print(e);});
-          }
-          ,
-        ), 
-
-      ),
+        );
+      }
     );
   }
 }
