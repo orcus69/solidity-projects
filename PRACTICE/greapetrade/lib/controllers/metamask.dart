@@ -13,42 +13,36 @@ class MetaMaskProvider extends ChangeNotifier{
   bool get isConnected => Ethereum.isSupported && currentAddress.isNotEmpty;
 
   // contractAddress and abi are setted after contract deploy
-  String contractAddress = '0x6ed6064904D158A9fe7b50969378d2A5875A214C';
+  String get fixedSwapContractAddress => '0x6ed6064904D158A9fe7b50969378d2A5875A214C';
 
-  List abi = [
-		{
-			"anonymous": false,
-			"inputs": [
-				{
-					"indexed": false,
-					"internalType": "address",
-					"name": "user",
-					"type": "address"
-				},
-				{
-					"indexed": false,
-					"internalType": "uint256",
-					"name": "etherAmount",
-					"type": "uint256"
-				},
-				{
-					"indexed": false,
-					"internalType": "uint256",
-					"name": "time",
-					"type": "uint256"
-				}
-			],
-			"name": "Deposit",
-			"type": "event"
-		},
-		{
-			"inputs": [],
-			"name": "deposit",
-			"outputs": [],
-			"stateMutability": "payable",
-			"type": "function"
-		}
+  final _abi = [
+    'function deposit() payable',
+    'event Deposit(address indexed from, uint amount, uint time)'
   ];
+  BigInt deposite = BigInt.zero;
+
+  //Get Balance of Wallet
+  final signer = provider!.getSigner();
+  BigInt balance =  BigInt.zero;
+
+  getBalance() async {
+    balance = await signer.getBalance();
+
+    notifyListeners();
+  }
+
+  Contract connectToContract(String address) => Contract(address, _abi, signer);
+
+  //wrapper of the contract funtion
+  deposit( BigInt amount) async {
+    final contract = connectToContract(fixedSwapContractAddress);
+    
+    //create a deposit transaction
+    await contract.send(
+      'deposit',
+    );
+  }
+
 
 
   //connect to metamask
@@ -64,6 +58,7 @@ class MetaMaskProvider extends ChangeNotifier{
         currentChain = await ethereum!.getChainId();
 
         accounts; // [foo,bar]
+        getBalance();
         notifyListeners();
       } on EthereumUserRejected {
         print('User rejected the modal');

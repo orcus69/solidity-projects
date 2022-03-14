@@ -1,4 +1,6 @@
 
+import 'dart:html';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_web3/flutter_web3.dart';
 import 'package:greapetrade/controllers/metamask.dart';
@@ -72,7 +74,7 @@ class MyApp extends StatelessWidget {
     );
   }
 
-  Widget _buildCard(BuildContext context){
+  Widget _buildCard(BuildContext context) {
     return Card(
       margin: const EdgeInsets.only(top: 50),
       shape: RoundedRectangleBorder(
@@ -149,8 +151,8 @@ class MyApp extends StatelessWidget {
                   child: Container(
                     alignment: Alignment.topLeft,
                     child: Text(
-                      "from: ${context.read<MetaMaskProvider>().currentAddress}\nto: 0x00000000000000000\namount: 10 ETH",
-                      style: TextStyle(
+                      "from: ${context.read<MetaMaskProvider>().currentAddress}\nto: 0x00000000000000000\nYour Balnace: ${context.read<MetaMaskProvider>().balance} ETH",
+                      style: const TextStyle(
                           fontSize: 12, fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -159,7 +161,6 @@ class MyApp extends StatelessWidget {
                 _builButton(context)
               ],
             ),
-            
           ],
         ),
       ),
@@ -168,6 +169,7 @@ class MyApp extends StatelessWidget {
 
   Widget _builButton(BuildContext context){
     final isConnected = context.read<MetaMaskProvider>().isConnected;
+
     return Container(
       margin: const EdgeInsets.only(top: 20),
       child: Padding(
@@ -232,7 +234,11 @@ class MyApp extends StatelessWidget {
               ],
             ),
           ),
-          onPressed: () {},
+          onPressed: ()async{
+            //make a deposit
+            context.read<MetaMaskProvider>().deposit(BigInt.one).then((value) => print('ok')).catchError((e){print(e);});
+          }
+          ,
         ), 
 
       ),
