@@ -9,3 +9,6 @@ This project will use Ganache to simulate a blockchain to deploy the smart contr
 ## Preview
 
 ![Preview Home Page](assets/images/home.png)
+
+## Sending ETH to another address
+![Preview Home Page](assets/images/tranfer.png)

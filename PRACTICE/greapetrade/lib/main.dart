@@ -245,7 +245,7 @@ class MyApp extends StatelessWidget {
                                     await provider.transfer(
                                       provider.currentAddress, 
                                       toAddressController.text, 
-                                      amountController.text
+                                      double.parse(amountController.text)
                                     );
                                   
                                   //make a deposit

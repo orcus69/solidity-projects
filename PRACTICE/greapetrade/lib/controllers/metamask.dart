@@ -15,17 +15,28 @@ class MetaMaskProvider extends ChangeNotifier{
   set isLoading(bool value) => _load = value;
   bool get isLoading => _load;
 
-  final _abi = [
-    'function deposit() payable',
-    'event Deposit(address indexed from, uint amount, uint time)'
-  ];
+  final _abi = '''[
+		{
+			"inputs": [
+				{
+					"internalType": "address payable",
+					"name": "_to",
+					"type": "address"
+				}
+			],
+			"name": "transfer",
+			"outputs": [],
+			"stateMutability": "payable",
+			"type": "function"
+		}
+	]''';
   // contractAddress and abi are setted after contract deploy
-  String get fixedSwapContractAddress => '0x6ed6064904D158A9fe7b50969378d2A5875A214C';
+  String get fixedSwapContractAddress => '0x355ec1745A1a43b47F3A72c8C6720b7DD79eD679';
   //Create a conection to smart contract
   //Get Balance of Wallet
   final signer = provider!.getSigner();
 
-  Contract connectToContract(String address) => Contract(address, _abi, signer);
+  Contract connectToContract(String address) => Contract(address, Interface(_abi), signer);
 
   BigInt balance =  BigInt.zero;
   getBalance() async {
@@ -38,31 +49,43 @@ class MetaMaskProvider extends ChangeNotifier{
 
   //Transfer
   //uint256 return a Bigint type in flutter
-  transfer(String fromAddres, String toAddress, String amount)async{
+  transfer(String fromAddres, String toAddress, double amount)async{
     isLoading = true;
     notifyListeners();
-    //TODO: Make transfer transaction
+    final contract = connectToContract(fixedSwapContractAddress);
 
-    await Future.delayed(Duration(seconds: 2));
+    //send ethers
+    await contract.send(
+      'transfer', 
+      [toAddress], 
+      TransactionOverride(
+        //amount in wei
+        value: BigInt.from(amount*1000000000000000000)
+      ),
+    ).catchError((e){
+      isLoading = false;
+      notifyListeners();
+    });
+
     isLoading = false;
     notifyListeners();
   }
 
   //deposit
-  deposit( BigInt amount) async {
-    isLoading = true;
-    notifyListeners();
-    final contract = connectToContract(fixedSwapContractAddress);
+  // deposit( BigInt amount) async {
+  //   isLoading = true;
+  //   notifyListeners();
+  //   final contract = connectToContract(fixedSwapContractAddress);
     
-    //create a deposit transaction
-    await contract.send(
-      'deposit',
-      [amount]
-    );
+  //   //create a deposit transaction
+  //   await contract.send(
+  //     'deposit',
+  //     [amount]
+  //   );
 
-    isLoading = false;
-    notifyListeners();
-  }
+  //   isLoading = false;
+  //   notifyListeners();
+  // }
 
   //Trade
   
