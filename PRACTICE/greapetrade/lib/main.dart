@@ -243,7 +243,6 @@ class MyApp extends StatelessWidget {
                                 onPressed: () async{ 
                                   if(formKey.currentState!.validate()){
                                     await provider.transfer(
-                                      provider.currentAddress, 
                                       toAddressController.text, 
                                       double.parse(amountController.text)
                                     );

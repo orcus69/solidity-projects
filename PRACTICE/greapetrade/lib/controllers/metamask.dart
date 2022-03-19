@@ -16,22 +16,47 @@ class MetaMaskProvider extends ChangeNotifier{
   bool get isLoading => _load;
 
   final _abi = '''[
-		{
-			"inputs": [
-				{
-					"internalType": "address payable",
-					"name": "_to",
-					"type": "address"
-				}
-			],
-			"name": "transfer",
-			"outputs": [],
-			"stateMutability": "payable",
-			"type": "function"
-		}
-	]''';
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "_from",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "_to",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_value",
+						"type": "uint256"
+					}
+				],
+				"name": "Transfer",
+				"type": "event"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address payable",
+						"name": "_to",
+						"type": "address"
+					}
+				],
+				"name": "transfer",
+				"outputs": [],
+				"stateMutability": "payable",
+				"type": "function"
+			}
+		]''';
   // contractAddress and abi are setted after contract deploy
-  String get fixedSwapContractAddress => '0x355ec1745A1a43b47F3A72c8C6720b7DD79eD679';
+  String get fixedSwapContractAddress => '0x145b74dF9573972cC54e176EB011844C502fB8e6';
   //Create a conection to smart contract
   //Get Balance of Wallet
   final signer = provider!.getSigner();
@@ -49,7 +74,7 @@ class MetaMaskProvider extends ChangeNotifier{
 
   //Transfer
   //uint256 return a Bigint type in flutter
-  transfer(String fromAddres, String toAddress, double amount)async{
+  transfer(String toAddress, double amount)async{
     isLoading = true;
     notifyListeners();
     final contract = connectToContract(fixedSwapContractAddress);
