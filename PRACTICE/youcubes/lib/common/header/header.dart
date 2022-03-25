@@ -30,14 +30,14 @@ class Header extends StatelessWidget {
     return ScreenHelper(
       desktop: Padding(
         padding: const EdgeInsets.symmetric(vertical: 4.0),
-        child: buildHeader(),
+        child: buildHeader(context),
       ),
-      mobile: buildHeader(),
-      tablet: buildHeader(),
+      mobile: buildHeader(context),
+      tablet: buildHeader(context),
     );
   }
 
-  Widget buildHeader(){
+  Widget buildHeader(BuildContext context){
     return Container(
       color: const Color(0xff024373),
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 6),
@@ -72,6 +72,12 @@ class Header extends StatelessWidget {
           //User data
           Row(
             children: [
+              //upload button
+              InkWell(
+                onTap: ()=>Navigator.of(context).pushNamed('upload'),
+                child: const Icon(Icons.upload_rounded, color: Colors.white)
+              ),
+              const SizedBox(width: 10,),
               Text('0x00000000000000000000000',style: TextStyle(color: Colors.white, fontSize: 14.0)),
               const SizedBox(width: 10,),
               Container(
