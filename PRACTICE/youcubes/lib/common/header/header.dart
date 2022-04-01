@@ -10,7 +10,7 @@ class HeaderLogo extends StatelessWidget {
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
-        onTap: (){},
+        onTap: ()=> Navigator.of(context).pushReplacementNamed('/'),
         child: RichText(
           text: const TextSpan(
            text: "YouCubes",
@@ -74,7 +74,7 @@ class Header extends StatelessWidget {
             children: [
               //upload button
               InkWell(
-                onTap: ()=>Navigator.of(context).pushNamed('upload'),
+                onTap: ()=>Navigator.of(context).pushReplacementNamed('/upload'),
                 child: const Icon(Icons.upload_rounded, color: Colors.white)
               ),
               const SizedBox(width: 10,),

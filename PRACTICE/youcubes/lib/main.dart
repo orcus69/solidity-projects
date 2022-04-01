@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:youcubes/common/header/header.dart';
 import 'package:youcubes/components/video_body.dart';
+import 'package:youcubes/pages/upload_page.dart';
 import 'package:youcubes/utils/globals.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:youcubes/common/header/header.dart';
@@ -44,7 +45,26 @@ class MyApp extends StatelessWidget {
 
         )
       ),
-      home: MyHomePage(title: 'YouCubes'),
+      onGenerateRoute: (route){
+        switch(route.name){
+            case '/upload':
+              return MaterialPageRoute(
+                builder: (_) => Scaffold(
+                  body: Column(
+                    children: [
+                      Header(),
+                      UploadPage(),
+                    ],
+                  ),
+                )
+              );
+            case '/':
+            default:
+              return MaterialPageRoute(
+                  builder: (_) => MyHomePage(title: 'YouCubes'),
+              );
+          }
+      },
     );
   }
 }
