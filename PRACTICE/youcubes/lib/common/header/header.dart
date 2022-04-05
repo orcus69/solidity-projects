@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:youcubes/controllers/metamask.dart';
 import 'package:youcubes/utils/screenHelper.dart';
 
 //Logo do cabeçalho
@@ -38,6 +40,9 @@ class Header extends StatelessWidget {
   }
 
   Widget buildHeader(BuildContext context){
+
+    final provider = Provider.of<MetaMaskProvider>(context, listen: true)..init();
+
     return Container(
       color: const Color(0xff024373),
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 6),
@@ -76,15 +81,46 @@ class Header extends StatelessWidget {
               InkWell(
                 onTap: ()=>Navigator.of(context).pushReplacementNamed('/upload'),
                 child: const Icon(Icons.upload_rounded, color: Colors.white)
-              ),
+              ),Container(
+                    child: provider.isConnected ? ElevatedButton(
+                      onPressed: () async => await provider.connect(),
+                      style: ButtonStyle(
+                        foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                        backgroundColor: MaterialStateProperty.all<Color>(const Color(0xff00F0FF)),
+                        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          )
+                        )
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: Image.asset(
+                              "/metamask.svg",
+                              fit: BoxFit.cover,
+                              scale: 15,
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 15,
+                          ),
+                          const Text(
+                            'Connect to MetaMask',
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold),
+                          )
+                        ],
+                      ),
+                    ) 
+                    : Text('0x00000000000000000000000',style: TextStyle(color: Colors.white, fontSize: 14.0)),
+                  ),
+
               const SizedBox(width: 10,),
-              Text('0x00000000000000000000000',style: TextStyle(color: Colors.white, fontSize: 14.0)),
-              const SizedBox(width: 10,),
-              Container(
-                color: Colors.grey,
-                width: 40,
-                height: 40,
-              )
+              
             ],
           )
           

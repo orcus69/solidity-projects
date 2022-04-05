@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:youcubes/common/header/header.dart';
 import 'package:youcubes/components/video_body.dart';
+import 'package:youcubes/controllers/metamask.dart';
 import 'package:youcubes/pages/upload_page.dart';
 import 'package:youcubes/utils/globals.dart';
 import 'package:responsive_framework/responsive_framework.dart';
@@ -49,13 +51,18 @@ class MyApp extends StatelessWidget {
         switch(route.name){
             case '/upload':
               return MaterialPageRoute(
-                builder: (_) => Scaffold(
-                  body: Column(
-                    children: [
-                      Header(),
-                      UploadPage(),
-                    ],
-                  ),
+                builder: (_) => ChangeNotifierProvider(
+                    create: (_) => MetaMaskProvider()..init(),
+                    builder: (_, child) {
+                    return Scaffold(
+                      body: Column(
+                        children: [
+                          Header(),
+                          UploadPage(),
+                        ],
+                      ),
+                    );
+                  }
                 )
               );
             case '/':
@@ -88,23 +95,28 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      
-      key: Globals.scaffoldKey,
-      
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            //Header
-            Header(),
+    return ChangeNotifierProvider(
+      create: (_) => MetaMaskProvider(),
+      builder: (_, child) {
+        return Scaffold(
+          
+          key: Globals.scaffoldKey,
+          
+          body: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                //Header
+                Header(),
 
-            //Video body
-            VideoBody()
-            
-          ],
-        ),
-      ),
+                //Video body
+                VideoBody()
+                
+              ],
+            ),
+          ),
+        );
+      }
     );
   }
 

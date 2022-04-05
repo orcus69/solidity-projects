@@ -1,5 +1,4 @@
 import 'dart:html';
-
 import 'package:flutter/material.dart';
 
 class UploadPage extends StatelessWidget {
@@ -17,8 +16,14 @@ class UploadPage extends StatelessWidget {
         final file = uploadInput.files?.first;
         final reader = FileReader();
 
-        reader.readAsDataUrl(file!);
+        //reader.readAsDataUrl(file!);
+        //convert tu array buffer
+        reader.readAsArrayBuffer(file!);
+
+        final arrayBuffer = reader.result; 
+
         reader.onLoadEnd.listen((event) {
+          print(arrayBuffer);
           onSelected(file);
         });
       });
@@ -29,8 +34,8 @@ class UploadPage extends StatelessWidget {
       const userAddress = '0x00000';
       const path = '';
 
-      uploadVideo(onSelected: (File file) { 
-        //Upload here
+      uploadVideo(onSelected: (File file) {
+
        });
     }
     
