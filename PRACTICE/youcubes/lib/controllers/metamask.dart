@@ -1,8 +1,9 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_web3/flutter_web3.dart';
+import 'package:get/get.dart';
 
-class MetaMaskProvider extends ChangeNotifier{
+class MetaMaskProvider extends GetxController{
   //ID of Ganache
   static const operatingChain = 1337;
   String currentAddress = "";
@@ -33,7 +34,7 @@ class MetaMaskProvider extends ChangeNotifier{
   //connect to metamask
   Future<void> connect() async{
     isLoading = true;
-    notifyListeners();
+    update();
     if (Ethereum.isSupported){
       try {
         // Prompt user to connect to the provider, i.e. confirm the connection modal
@@ -47,11 +48,11 @@ class MetaMaskProvider extends ChangeNotifier{
         accounts; // [foo,bar]
 
         isLoading = false;
-        notifyListeners();
+        update();
       } on EthereumUserRejected {
         isLoading = false;
         print('User rejected the modal');
-        notifyListeners();
+        update();
       }
     }
 
@@ -60,7 +61,7 @@ class MetaMaskProvider extends ChangeNotifier{
   clear(){
     currentAddress = "";
     currentChain = -1;
-    notifyListeners();
+    update();
   }
   
   //Init if browser has Web3 support

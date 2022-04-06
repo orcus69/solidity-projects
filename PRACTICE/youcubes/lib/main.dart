@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_web3/flutter_web3.dart';
+import 'package:get/get.dart';
 import 'package:youcubes/common/header/header.dart';
 import 'package:youcubes/components/video_body.dart';
 import 'package:youcubes/controllers/metamask.dart';
@@ -15,10 +16,11 @@ void main() {
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
+  
   @override
   Widget build(BuildContext context) {
+
     return MaterialApp(
-      
       debugShowCheckedModeBanner: false,
       title: 'YouCubes',
       theme: ThemeData(
@@ -51,24 +53,19 @@ class MyApp extends StatelessWidget {
         switch(route.name){
             case '/upload':
               return MaterialPageRoute(
-                builder: (_) => ChangeNotifierProvider(
-                    create: (_) => MetaMaskProvider()..init(),
-                    builder: (_, child) {
-                    return Scaffold(
-                      body: Column(
-                        children: [
-                          Header(),
-                          UploadPage(),
-                        ],
-                      ),
-                    );
-                  }
+                builder: (_) => Scaffold(
+                    body: Column(
+                      children: [
+                        Header(),
+                        UploadPage(),
+                      ],
+                    )
                 )
               );
             case '/':
             default:
               return MaterialPageRoute(
-                  builder: (_) => MyHomePage(title: 'YouCubes'),
+                  builder: (_) => MyHomePage(),
               );
           }
       },
@@ -76,15 +73,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, required this.title}) : super(key: key);
-  final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
+class MyHomePage extends StatelessWidget {
   Icon customIcon = const Icon(Icons.search);
  Widget customSearchBar = RichText(
           text: const TextSpan(
@@ -95,31 +84,22 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => MetaMaskProvider(),
-      builder: (_, child) {
-        return Scaffold(
-          
-          key: Globals.scaffoldKey,
-          
-          body: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                //Header
-                Header(),
+    return Scaffold(
+      key: Globals.scaffoldKey,
+      
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: const [
+            //Header
+            Header(),
 
-                //Video body
-                VideoBody()
-                
-              ],
-            ),
-          ),
-        );
-      }
+            //Video body
+            VideoBody()
+            
+          ],
+        ),
+      ),
     );
   }
-
-  
-
 }
