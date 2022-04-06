@@ -1,8 +1,9 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_web3/flutter_web3.dart';
+import 'package:get/get.dart';
 
-class MetaMaskProvider extends ChangeNotifier{
+class MetaMaskProvider extends GetxController{
   //ID of Ganache
   static const operatingChain = 1337;
   String currentAddress = "";
@@ -67,7 +68,7 @@ class MetaMaskProvider extends ChangeNotifier{
   getBalance() async {
     balance = await signer.getBalance();
 
-    notifyListeners();
+    update();
   }
   
   //Smart contract functions
@@ -76,7 +77,7 @@ class MetaMaskProvider extends ChangeNotifier{
   //uint256 return a Bigint type in flutter
   transfer(String toAddress, double amount)async{
     isLoading = true;
-    notifyListeners();
+    update();
     final contract = connectToContract(fixedSwapContractAddress);
 
     //send ethers
@@ -89,17 +90,17 @@ class MetaMaskProvider extends ChangeNotifier{
       ),
     ).catchError((e){
       isLoading = false;
-      notifyListeners();
+      update();
     });
 
     isLoading = false;
-    notifyListeners();
+    update();
   }
 
   //deposit
   // deposit( BigInt amount) async {
   //   isLoading = true;
-  //   notifyListeners();
+  //   update();
   //   final contract = connectToContract(fixedSwapContractAddress);
     
   //   //create a deposit transaction
@@ -109,7 +110,7 @@ class MetaMaskProvider extends ChangeNotifier{
   //   );
 
   //   isLoading = false;
-  //   notifyListeners();
+  //   update();
   // }
 
   //Trade
@@ -119,7 +120,7 @@ class MetaMaskProvider extends ChangeNotifier{
   //connect to metamask
   Future<void> connect() async{
     isLoading = true;
-    notifyListeners();
+    update();
     if (Ethereum.isSupported){
       try {
         // Prompt user to connect to the provider, i.e. confirm the connection modal
@@ -135,11 +136,11 @@ class MetaMaskProvider extends ChangeNotifier{
         getBalance();
 
         isLoading = false;
-        notifyListeners();
+        update();
       } on EthereumUserRejected {
         isLoading = false;
         print('User rejected the modal');
-        notifyListeners();
+        update();
       }
     }
 
@@ -148,7 +149,7 @@ class MetaMaskProvider extends ChangeNotifier{
   clear(){
     currentAddress = "";
     currentChain = -1;
-    notifyListeners();
+    update();
   }
   
   //Init if browser has Web3 support
