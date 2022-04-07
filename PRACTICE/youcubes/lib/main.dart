@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    return MaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'YouCubes',
       theme: ThemeData(
@@ -49,6 +49,11 @@ class MyApp extends StatelessWidget {
 
         )
       ),
+      //TODO: use GetX routes
+      getPages: [
+        GetPage(name: '/', page: () => MyHomePage()),
+      ],
+
       onGenerateRoute: (route){
         switch(route.name){
             case '/upload':
@@ -61,11 +66,6 @@ class MyApp extends StatelessWidget {
                       ],
                     )
                 )
-              );
-            case '/':
-            default:
-              return MaterialPageRoute(
-                  builder: (_) => MyHomePage(),
               );
           }
       },

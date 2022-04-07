@@ -22,10 +22,6 @@ class MetaMaskProvider extends GetxController{
   // contractAddress and abi are setted after contract deploy
   String get fixedSwapContractAddress => '';
   //Create a conection to smart contract
-  //Get Balance of Wallet
-  final signer = provider!.getSigner();
-
-  Contract connectToContract(String address) => Contract(address, Interface(_abi), signer);
   
   //Smart contract functions
 
@@ -69,6 +65,7 @@ class MetaMaskProvider extends GetxController{
     if(Ethereum.isSupported){
       ethereum!.onAccountsChanged((accounts) {
         clear();
+        print('init');
       });
       ethereum!.onChainChanged((accounts) {
         clear();
